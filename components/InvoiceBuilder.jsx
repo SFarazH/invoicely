@@ -41,6 +41,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import TestAvatar from "./test";
 
 /* ---------------------------------------------------------------------- */
 /* Constants                                                               */

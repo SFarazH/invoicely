@@ -14,7 +14,7 @@ export default function TemplatesPage() {
 
   return (
     <div style={{ height: "100vh" }}>
-      <InvoiceBuilder headerActions={<LogoutButton />} />
+      <InvoiceBuilder headerActions={<LogoutButton mail="y" />} />
     </div>
   );
 }
