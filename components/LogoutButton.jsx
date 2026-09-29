@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 
 import { theme } from "@/lib/theme";
 import { Blobatar } from "blobatar/react";
+import { useAuth } from "@/components/AuthContext";
+import "blobatar/motion.css";
 
-export default function LogoutButton({ mail }) {
+export default function LogoutButton() {
   const router = useRouter();
+  const { activeUser, setActiveUser } = useAuth();
 
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
@@ -34,6 +37,7 @@ export default function LogoutButton({ mail }) {
       method: "POST",
     });
 
+    setActiveUser(null);
     router.push("/login");
     router.refresh();
   }
@@ -63,7 +67,14 @@ export default function LogoutButton({ mail }) {
           justifyContent: "center",
         }}
       >
-        <Blobatar name="blobatar" animate="always" size={60} />
+        {activeUser && (
+          <Blobatar
+            // name="blobatar"
+            name={activeUser?.email || "blobatar"}
+            animate="always"
+            size={50}
+          />
+        )}
       </button>
 
       {/* Dropdown */}
@@ -99,9 +110,9 @@ export default function LogoutButton({ mail }) {
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
               }}
-              title={mail}
+              title={activeUser?.name || ""}
             >
-              {mail}
+              {activeUser?.name || ""}
             </div>
           </div>
 

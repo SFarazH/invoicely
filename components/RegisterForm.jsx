@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { theme, inputStyle, primaryButtonStyle } from "@/lib/theme";
+import { useAuth } from "@/components/AuthContext";
 
 export default function RegisterForm() {
   const router = useRouter();
+  const { setActiveUser } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,6 +30,7 @@ export default function RegisterForm() {
         setError(data.error || "Registration failed");
         return;
       }
+      setActiveUser(data);
       router.push("/templates");
       router.refresh();
     } catch {
@@ -40,7 +43,8 @@ export default function RegisterForm() {
   const fieldStyle = (name) => ({
     ...inputStyle,
     borderColor: focused === name ? theme.color.accent : theme.color.border,
-    boxShadow: focused === name ? `0 0 0 3px ${theme.color.accentSoft}` : "none",
+    boxShadow:
+      focused === name ? `0 0 0 3px ${theme.color.accentSoft}` : "none",
   });
 
   return (
@@ -48,7 +52,13 @@ export default function RegisterForm() {
       <div style={{ marginBottom: 16 }}>
         <label
           htmlFor="name"
-          style={{ display: "block", fontSize: 13, fontWeight: 500, color: theme.color.textSecondary, marginBottom: 6 }}
+          style={{
+            display: "block",
+            fontSize: 13,
+            fontWeight: 500,
+            color: theme.color.textSecondary,
+            marginBottom: 6,
+          }}
         >
           Name
         </label>
@@ -67,7 +77,13 @@ export default function RegisterForm() {
       <div style={{ marginBottom: 16 }}>
         <label
           htmlFor="email"
-          style={{ display: "block", fontSize: 13, fontWeight: 500, color: theme.color.textSecondary, marginBottom: 6 }}
+          style={{
+            display: "block",
+            fontSize: 13,
+            fontWeight: 500,
+            color: theme.color.textSecondary,
+            marginBottom: 6,
+          }}
         >
           Email
         </label>
@@ -87,7 +103,13 @@ export default function RegisterForm() {
       <div style={{ marginBottom: 20 }}>
         <label
           htmlFor="password"
-          style={{ display: "block", fontSize: 13, fontWeight: 500, color: theme.color.textSecondary, marginBottom: 6 }}
+          style={{
+            display: "block",
+            fontSize: 13,
+            fontWeight: 500,
+            color: theme.color.textSecondary,
+            marginBottom: 6,
+          }}
         >
           Password
         </label>
@@ -103,7 +125,13 @@ export default function RegisterForm() {
           onBlur={() => setFocused(null)}
           style={fieldStyle("password")}
         />
-        <div style={{ fontSize: 12, color: theme.color.textTertiary, marginTop: 6 }}>
+        <div
+          style={{
+            fontSize: 12,
+            color: theme.color.textTertiary,
+            marginTop: 6,
+          }}
+        >
           At least 6 characters.
         </div>
       </div>
@@ -138,10 +166,19 @@ export default function RegisterForm() {
           justifyContent: "center",
           gap: 8,
         }}
-        onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = theme.color.accentHover; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = theme.color.accent; }}
-        onMouseDown={(e) => { if (!loading) e.currentTarget.style.transform = "scale(0.98)"; }}
-        onMouseUp={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+        onMouseEnter={(e) => {
+          if (!loading)
+            e.currentTarget.style.background = theme.color.accentHover;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = theme.color.accent;
+        }}
+        onMouseDown={(e) => {
+          if (!loading) e.currentTarget.style.transform = "scale(0.98)";
+        }}
+        onMouseUp={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+        }}
       >
         {loading && (
           <span

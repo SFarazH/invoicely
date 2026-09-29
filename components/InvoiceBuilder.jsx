@@ -41,7 +41,6 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import TestAvatar from "./test";
 
 /* ---------------------------------------------------------------------- */
 /* Constants                                                               */
@@ -2385,6 +2384,7 @@ function TemplateCard({
           : "0 1px 2px rgba(0,0,0,0.04)",
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
         transition: "all 220ms cubic-bezier(0.4, 0, 0.2, 1)",
+        border: "1px solid black",
       }}
     >
       <div
@@ -2523,7 +2523,7 @@ function TemplateCard({
           <button
             onClick={onEdit}
             style={{
-              flex: 1,
+              flex: "1 1 0",
               fontSize: 13,
               fontWeight: 500,
               border: "1px solid #E8E8ED",
@@ -2542,7 +2542,7 @@ function TemplateCard({
           <button
             onClick={onCreateInvoice}
             style={{
-              flex: 1,
+              flex: "2 1 0",
               fontSize: 13,
               fontWeight: 500,
               border: "none",
@@ -4942,7 +4942,7 @@ export default function InvoiceBuilder({ headerActions }) {
                 color: "#1D1D1F",
               }}
             >
-              <LayoutTemplate size={17} color="#4F46E5" /> Invoice Editor
+              <LayoutTemplate size={17} color="#4F46E5" /> Invoicely
             </div>
             {headerActions}
           </div>
