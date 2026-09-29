@@ -5,20 +5,31 @@ import { getUserId } from "@/lib/auth";
 
 export async function GET(request) {
   const userId = getUserId(request);
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   await connectDB();
-  const templates = await Template.find({ userId }).sort({ createdAt: 1 });
+
+  const templates = await Template.find({ userId }).sort({
+    isDefault: -1,
+    createdAt: 1,
+  });
+
   return NextResponse.json(templates);
 }
-
 export async function POST(request) {
   const userId = getUserId(request);
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!userId)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json().catch(() => null);
   if (!body?.name || !body?.schema) {
-    return NextResponse.json({ error: "name and schema are required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "name and schema are required" },
+      { status: 400 },
+    );
   }
 
   await connectDB();

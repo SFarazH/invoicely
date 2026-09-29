@@ -950,8 +950,16 @@ function CheckboxRow({ label, checked, onChange }) {
     </label>
   );
 }
-function IconBtn({ icon: Icon, onClick, title, active, disabled }) {
+function IconBtn({
+  icon: Icon,
+  onClick,
+  title,
+  active,
+  disabled,
+  iconProps = {},
+}) {
   const [hovered, setHovered] = useState(false);
+
   return (
     <button
       onClick={onClick}
@@ -966,21 +974,23 @@ function IconBtn({ icon: Icon, onClick, title, active, disabled }) {
         width: 30,
         height: 30,
         borderRadius: 8,
-        border: "1px solid " + (active ? "#4F46E5" : "transparent"),
-        background: active
-          ? "#EEF2FF"
-          : hovered && !disabled
-            ? "#F0F0F2"
-            : "transparent",
+
+        // Removed blue border
+        border: "1px solid transparent",
+
+        background: hovered && !disabled ? "#F0F0F2" : "transparent",
+
         color: disabled ? "#D1D5DB" : active ? "#4F46E5" : "#4B5563",
+
         cursor: disabled ? "default" : "pointer",
         transition: "background 150ms ease, color 150ms ease",
       }}
     >
-      <Icon size={15} />
+      <Icon size={15} {...iconProps} />
     </button>
   );
 }
+
 const ROW_GAP = { display: "flex", gap: 6 };
 
 function wrapperStyle(comp) {
@@ -2368,197 +2378,291 @@ function TemplateCard({
   const [editingName, setEditingName] = useState(false);
   const [nameVal, setNameVal] = useState(tpl.name);
   const [hovered, setHovered] = useState(false);
+
+  const saveName = () => {
+    setEditingName(false);
+    onRename(nameVal || tpl.name);
+  };
+
   return (
     <div
       className="animate-fade-up"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        borderRadius: 14,
+        borderRadius: 16,
         background: "#fff",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
+
+        border: "1px solid #E5E5EA",
+
         boxShadow: hovered
-          ? "0 12px 32px rgba(0,0,0,0.10)"
-          : "0 1px 2px rgba(0,0,0,0.04)",
-        transform: hovered ? "translateY(-3px)" : "translateY(0)",
-        transition: "all 220ms cubic-bezier(0.4, 0, 0.2, 1)",
-        border: "1px solid black",
+          ? "0 10px 30px rgba(0,0,0,0.08)"
+          : "0 2px 8px rgba(0,0,0,0.04)",
+
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        transition: "all 180ms ease",
       }}
     >
+      {/* ================= PREVIEW ================= */}
       <div
-        style={{
-          background: "#F5F5F7",
-          display: "flex",
-          justifyContent: "center",
-          padding: 14,
-          cursor: "pointer",
-        }}
         onClick={onEdit}
         title="Click to edit"
+        style={{
+          height: 210,
+          background: "#F7F7F8",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          overflow: "hidden",
+          cursor: "pointer",
+          position: "relative",
+          borderBottom: "1px solid #EEEEF0",
+        }}
       >
-        <div style={{ cursor: "pointer" }}>
+        <div
+          style={{
+            marginTop: 16,
+            transform: "scale(0.78)",
+            transformOrigin: "top center",
+            transition: "transform 200ms ease",
+          }}
+        >
           <PageCanvas schema={tpl.schema} width={THUMB_W} />
         </div>
+
+        {/* subtle hover overlay */}
+        {hovered && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "rgba(255,255,255,0.08)",
+              pointerEvents: "none",
+            }}
+          />
+        )}
       </div>
-      <div style={{ padding: "14px 14px 16px" }}>
+
+      {/* ================= CONTENT ================= */}
+      <div
+        style={{
+          padding: "14px 14px 14px",
+        }}
+      >
+        {/* NAME */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 6,
-            marginBottom: 10,
+            justifyContent: "space-between",
+            marginBottom: 12,
           }}
         >
           {editingName ? (
-            <>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                width: "100%",
+              }}
+            >
               <input
                 autoFocus
                 value={nameVal}
                 onChange={(e) => setNameVal(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    setEditingName(false);
-                    onRename(nameVal || tpl.name);
-                  } else if (e.key === "Escape") {
+                    saveName();
+                  }
+
+                  if (e.key === "Escape") {
                     setNameVal(tpl.name);
                     setEditingName(false);
                   }
                 }}
-                style={{ ...inputBase, fontWeight: 600, flex: 1 }}
-              />
-              <button
-                onClick={() => {
-                  setEditingName(false);
-                  onRename(nameVal || tpl.name);
+                style={{
+                  ...inputBase,
+                  flex: 1,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  minWidth: 0,
                 }}
-                title="Save"
+              />
+
+              <button
+                onClick={saveName}
                 style={{
                   border: "none",
-                  background: "none",
+                  background: "transparent",
                   color: "#16A34A",
                   cursor: "pointer",
                   padding: 4,
-                  display: "flex",
-                  flexShrink: 0,
                 }}
               >
                 <Check size={15} />
               </button>
+
               <button
                 onClick={() => {
                   setNameVal(tpl.name);
                   setEditingName(false);
                 }}
-                title="Cancel"
                 style={{
                   border: "none",
-                  background: "none",
+                  background: "transparent",
                   color: "#86868B",
                   cursor: "pointer",
                   padding: 4,
-                  display: "flex",
-                  flexShrink: 0,
                 }}
               >
                 <X size={15} />
               </button>
-            </>
-          ) : (
-            <div
-              style={{
-                fontSize: 14.5,
-                fontWeight: 600,
-                letterSpacing: -0.1,
-                color: "#1D1D1F",
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                minWidth: 0,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {tpl.name}
-              {tpl.isDefault && (
-                <Star
-                  size={12}
-                  fill="#F59E0B"
-                  color="#F59E0B"
-                  style={{ flexShrink: 0 }}
-                />
-              )}
             </div>
-          )}
-          {!editingName && (
-            <button
-              onClick={() => setEditingName(true)}
-              style={{
-                border: "none",
-                background: "none",
-                color: "#86868B",
-                cursor: "pointer",
-                padding: 2,
-                flexShrink: 0,
-              }}
-            >
-              <Pencil size={13} />
-            </button>
+          ) : (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 7,
+                  minWidth: 0,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 600,
+                    color: "#1D1D1F",
+                    letterSpacing: "-0.2px",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {tpl.name}
+                </span>
+
+                {/* {tpl.isDefault && (
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      color: "#92400E",
+                      background: "#FEF3C7",
+                      padding: "3px 6px",
+                      borderRadius: 5,
+                      flexShrink: 0,
+                    }}
+                  >
+                    Default
+                  </span>
+                )} */}
+              </div>
+
+              <IconBtn
+                icon={Pencil}
+                title="Rename"
+                onClick={() => setEditingName(true)}
+              />
+            </>
           )}
         </div>
-        <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
+
+        {/* SECONDARY ACTIONS */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            marginBottom: 14,
+          }}
+        >
           <IconBtn
             icon={Star}
             title={tpl.isDefault ? "Default template" : "Set as default"}
             active={tpl.isDefault}
             onClick={onSetDefault}
+            iconProps={{
+              fill: tpl.isDefault ? "#F59E0B" : "none",
+              color: tpl.isDefault ? "#F59E0B" : "currentColor",
+            }}
           />
+
           <IconBtn icon={Copy} title="Duplicate" onClick={onDuplicate} />
+
           <IconBtn icon={Trash2} title="Delete" onClick={onDelete} />
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+
+        {/* MAIN ACTIONS */}
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+          }}
+        >
           <button
             onClick={onEdit}
             style={{
-              flex: "1 1 0",
-              fontSize: 13,
-              fontWeight: 500,
-              border: "1px solid #E8E8ED",
+              flex: 1,
+              border: "1px solid #E1E1E6",
               background: "#fff",
               color: "#1D1D1F",
-              borderRadius: 8,
-              padding: "8px 0",
+              borderRadius: 9,
+
+              fontSize: 11,
+              padding: "6px 8px",
+              fontWeight: 550,
+              letterSpacing: 0.2,
+
               cursor: "pointer",
-              transition: "background 150ms ease",
+              transition: "all 150ms ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#F5F5F7")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#fff")}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#F7F7F8";
+              e.currentTarget.style.borderColor = "#D4D4D8";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#fff";
+              e.currentTarget.style.borderColor = "#E1E1E6";
+            }}
           >
             Edit
           </button>
+
           <button
             onClick={onCreateInvoice}
             style={{
-              flex: "2 1 0",
-              fontSize: 13,
-              fontWeight: 500,
+              flex: 1.5,
               border: "none",
               background: "#4F46E5",
               color: "#fff",
               borderRadius: 8,
-              padding: "8px 0",
+
+              fontSize: 11,
+              padding: "6px 8px",
+              fontWeight: 550,
+              letterSpacing: 0.2,
+
               cursor: "pointer",
+
               transition: "background 150ms ease, transform 100ms ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#4338CA")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#4F46E5")}
-            onMouseDown={(e) =>
-              (e.currentTarget.style.transform = "scale(0.97)")
-            }
-            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#4338CA";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#4F46E5";
+            }}
+            onMouseDown={(e) => {
+              e.currentTarget.style.transform = "scale(0.98)";
+            }}
+            onMouseUp={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
           >
             Create Invoice
           </button>
@@ -4868,13 +4972,36 @@ export default function InvoiceBuilder({ headerActions }) {
   };
   const handleSetDefault = async (id) => {
     const previousDefault = templates.find((t) => t.isDefault && t.id !== id);
-    setTemplates((prev) => prev.map((t) => ({ ...t, isDefault: t.id === id })));
-    await Promise.all([
-      templatesApi.update(id, { isDefault: true }),
-      previousDefault
-        ? templatesApi.update(previousDefault.id, { isDefault: false })
-        : null,
-    ]);
+
+    // Immediately update UI
+    setTemplates((prev) =>
+      prev.map((t) => ({
+        ...t,
+        isDefault: t.id === id,
+      })),
+    );
+
+    try {
+      await Promise.all([
+        templatesApi.update(id, { isDefault: true }),
+
+        previousDefault
+          ? templatesApi.update(previousDefault.id, {
+              isDefault: false,
+            })
+          : null,
+      ]);
+
+      // Re-fetch templates from GET API
+      const docs = await templatesApi.list();
+      setTemplates(docs);
+    } catch {
+      // If something failed, get the actual state from the server
+      const docs = await templatesApi.list();
+      setTemplates(docs);
+
+      alert("Could not set the default template. Please try again.");
+    }
   };
   const handleRename = async (id, name) => {
     setTemplates((prev) => prev.map((t) => (t.id === id ? { ...t, name } : t)));
